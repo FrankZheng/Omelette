@@ -3,19 +3,17 @@ package com.frankzheng.app.omelette.ui;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
 import com.frankzheng.app.omelette.task.Task;
-import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,12 +29,12 @@ public class MainActivity extends AppCompatActivity {
     ListView lv_posts;
     SwipeRefreshLayout swipeRefreshLayout;
 
+    boolean paused = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         lv_posts = (ListView)findViewById(R.id.lv_posts);
         postsAdapter = new PostsAdapter(this);
@@ -47,31 +45,7 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Task task = RecentPostsModel.getInstance().loadRecentPosts();
-                if (task != null) {
-                    task.addTaskListener(new Task.TaskListener() {
-                        @Override
-                        public void onSuccess(Task task, Object data) {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onError(int code) {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-                        }
-                    });
-                }
+                loadPosts();
             }
         });
 
@@ -83,80 +57,87 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         RecentPostsModel.getInstance().setListener(new RecentPostsModel.Listener() {
             @Override
             public void postsChanged() {
-                final List<Post> posts = RecentPostsModel.getInstance().getPosts();
-                Log.i(TAG, "posts Changed, " + posts.size());
-                Collections.sort(posts, new Comparator<Post>() {
-                    @Override
-                    public int compare(Post lhs, Post rhs) {
-                        return -lhs.date.compareTo(rhs.date);
+                showPosts();
+            }
+        });
+
+        if (RecentPostsModel.getInstance().isEmpty()) {
+            //load posts from cache.
+            RecentPostsModel.getInstance().loadRecentPostsFromLocalCache();
+        } else {
+            //has posts already, show them directly.
+            showPosts();
+        }
+
+        //load posts
+        swipeRefreshLayout.setRefreshing(true);
+        loadPosts();
+    }
+
+    private void loadPosts() {
+        Task task = RecentPostsModel.getInstance().loadRecentPosts();
+        if (task != null) {
+            task.addTaskListener(new Task.TaskListener() {
+                @Override
+                public void onComplete(Task task) {
+                    super.onComplete(task);
+                    if (!paused) {
+                        lv_posts.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+
                     }
-                });
-
-                lv_posts.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //refresh data
-                        postsAdapter.clear();
-                        postsAdapter.addAll(posts);
-                        postsAdapter.notifyDataSetChanged();
-                    }
-                });
-
-            }
-        });
-
-        /*
-        findViewById(R.id.btn_load).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Task task = RecentPostsModel.getInstance().loadRecentPosts(page++);
-                if (task != null) {
-                    task.addTaskListener(new Task.TaskListener<RecentPostsResponse>() {
-                        @Override
-                        public void onSuccess(Task task, RecentPostsResponse data) {
-                            Log.i(TAG, "onSuccess");
-                        }
-
-                        @Override
-                        public void onError(int code) {
-                            Log.i(TAG, "onError: " + code);
-                        }
-                    });
                 }
-            }
-        });
-        */
+            });
+        }
+    }
 
-        /*
-        findViewById(R.id.btn_fresh).setOnClickListener(new View.OnClickListener() {
+    private void showPosts() {
+        if (paused) {
+            Log.d(TAG, "activity paused, won't show posts");
+            return;
+        }
+        final List<Post> posts = RecentPostsModel.getInstance().getPosts();
+        Log.i(TAG, "posts Changed, " + posts.size());
+        Collections.sort(posts, new Comparator<Post>() {
             @Override
-            public void onClick(View v) {
-                Task task = RecentPostsModel.getInstance().loadRecentPosts(1);
-                if (task != null) {
-                    task.addTaskListener(new Task.TaskListener<RecentPostsResponse>() {
-                        @Override
-                        public void onSuccess(Task task, RecentPostsResponse data) {
-                            Log.i(TAG, "onSuccess");
-                        }
-
-                        @Override
-                        public void onError(int code) {
-                            Log.i(TAG, "onError: " + code);
-                        }
-                    });
-                }
+            public int compare(Post lhs, Post rhs) {
+                return -lhs.date.compareTo(rhs.date);
             }
         });
-        */
 
-        RecentPostsModel.getInstance().loadRecentPostsFromLocalCache();
+        lv_posts.post(new Runnable() {
+            @Override
+            public void run() {
+                //refresh data
+                postsAdapter.clear();
+                postsAdapter.addAll(posts);
+                postsAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        paused = false;
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        paused = true;
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

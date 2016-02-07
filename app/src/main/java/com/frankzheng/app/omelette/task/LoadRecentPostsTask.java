@@ -1,20 +1,16 @@
 package com.frankzheng.app.omelette.task;
 
-import android.util.Log;
-
 import com.frankzheng.app.omelette.model.RecentPostsModel;
 import com.frankzheng.app.omelette.net.JandanService;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
-
-import java.io.IOException;
 
 import retrofit2.Call;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
  */
-public class LoadRecentPostsTask extends Task<RecentPostsResponse> implements Runnable {
+public class LoadRecentPostsTask extends Task<RecentPostsResponse> {
     private static final String TAG = "LoadRecentPostsTask";
     private JandanService service = Network.getInstance().getJandanService();
     private final int page;
@@ -30,20 +26,27 @@ public class LoadRecentPostsTask extends Task<RecentPostsResponse> implements Ru
         return page;
     }
 
-    public void run() {
+    @Override
+    protected RecentPostsResponse doInBackground() throws Exception {
         Call<RecentPostsResponse> call = service.getRecentPosts(page);
-        try {
-            retrofit2.Response<RecentPostsResponse> response = call.execute();
-            Log.i(TAG, String.format("status code: %d", response.code()));
-            if (response.code() == 200) {
-                RecentPostsResponse posts = response.body();
-                Log.i(TAG, String.format("%s, %d， %d", posts.status, posts.count, posts.posts.size()));
+
+        retrofit2.Response<RecentPostsResponse> response = call.execute();
+        if (response.isSuccess()) {
+            RecentPostsResponse posts = response.body();
+            if ("ok".equals(posts.status)) {
+                //success
                 RecentPostsModel.getInstance().updatePosts(posts);
-                onSuccess(posts);
+                return posts;
+            } else {
+                //status not ok.
+                OMError error = new OMError(posts.status);
+                onError(error);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            onError(-1);
+
+        } else {
+            OMError error = new OMError(response.code(), response.message());
+            onError(error);
         }
+        return null;
     }
 }
