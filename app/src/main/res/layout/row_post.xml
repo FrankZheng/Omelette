@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/iv_thumb"
+        android:paddingLeft="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_width="100dp"
+        android:layout_height="80dp" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:textSize="16sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/iv_thumb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_source"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_toLeftOf="@id/iv_thumb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
