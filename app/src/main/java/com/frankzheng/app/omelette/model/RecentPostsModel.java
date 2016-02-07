@@ -8,13 +8,15 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
 import com.frankzheng.app.omelette.MainApplication;
-import com.frankzheng.app.omelette.task.TaskManager;
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.LoadRecentPostsTask;
+import com.frankzheng.app.omelette.task.OMError;
 import com.frankzheng.app.omelette.task.Task;
+import com.frankzheng.app.omelette.task.TaskManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class RecentPostsModel {
     }
 
     private static RecentPostsModel instance;
-    private SparseArray<Post> posts = new SparseArray<>();
+    private final SparseArray<Post> posts = new SparseArray<>();
     private SparseBooleanArray tasksStatus = new SparseBooleanArray();
     private Listener listener;
 
@@ -78,8 +80,8 @@ public class RecentPostsModel {
                 }
 
                 @Override
-                public void onError(int code) {
-                    Log.i(TAG, "onError: " + code);
+                public void onError(OMError error) {
+                    Log.i(TAG, "onError: " + error.getMessage());
                     tasksStatus.delete(page);
                 }
             });
@@ -89,6 +91,11 @@ public class RecentPostsModel {
         }
         return null;
     }
+
+    public boolean isEmpty() {
+        return this.posts.size() == 0;
+    }
+
 
     public void loadRecentPostsFromLocalCache() {
         String json = sp.getString(POSTS_KEY, null);
