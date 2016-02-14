@@ -23,7 +23,7 @@ public class RecentPostsResponse {
         public int id;
         public String slug;
         public String title;
-        public String desctiption;
+        public String description;
         public long post_count;
     }
 
@@ -35,7 +35,7 @@ public class RecentPostsResponse {
         public String last_name;
         public String nickname;
         public String url;
-        public String descripton;
+        public String description;
     }
 
     public class CustomFields {
