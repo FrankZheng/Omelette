@@ -77,6 +77,8 @@ public class RecentPostsModel {
                         editor.putString(POSTS_KEY, gson.toJson(data));
                         editor.commit();
                     }
+
+                    updatePosts(data);
                 }
 
                 @Override

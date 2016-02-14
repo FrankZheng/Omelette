@@ -1,11 +1,14 @@
 package com.frankzheng.app.omelette.task;
 
-import java.util.WeakHashMap;
+import android.util.Log;
+
+import java.util.HashMap;
 
 /**
  * Created by zhengxiaoqiang on 16/2/4.
  */
 public abstract class Task<T> implements Runnable {
+    private static final String TAG = "Task";
 
     public abstract static class TaskListener<T> {
         public void onSuccess(Task task, T data) {
@@ -21,7 +24,7 @@ public abstract class Task<T> implements Runnable {
         }
     }
 
-    protected WeakHashMap<TaskListener<T>, Boolean> listeners = new WeakHashMap<>();
+    protected HashMap<TaskListener<T>, Boolean> listeners = new HashMap<>();
 
     public void addTaskListener(TaskListener<T> listener) {
         listeners.put(listener, true);
@@ -33,17 +36,23 @@ public abstract class Task<T> implements Runnable {
 
     @Override
     public void run() {
+        Log.d(TAG, "run...");
         try {
             T data = doInBackground();
             onSuccess(data);
+        } catch (OMError error) {
+            Log.d(TAG, "onError");
+            onError(error);
         } catch (Throwable t) {
+            Log.d(TAG, "catch throwable");
             onError(new OMError(t));
         } finally {
+            Log.d(TAG, "onComplete");
             onComplete();
         }
     }
 
-    abstract protected T doInBackground() throws Exception;
+    abstract protected T doInBackground() throws Throwable;
 
     protected void onSuccess(T data) {
         for (TaskListener<T> listener : listeners.keySet()) {
@@ -51,7 +60,7 @@ public abstract class Task<T> implements Runnable {
         }
     }
 
-    protected void onError(OMError error) {
+    private void onError(OMError error) {
         for (TaskListener listener : listeners.keySet()) {
             listener.onError(error);
         }

@@ -27,7 +27,7 @@ public class LoadRecentPostsTask extends Task<RecentPostsResponse> {
     }
 
     @Override
-    protected RecentPostsResponse doInBackground() throws Exception {
+    protected RecentPostsResponse doInBackground() throws Throwable {
         Call<RecentPostsResponse> call = service.getRecentPosts(page);
 
         retrofit2.Response<RecentPostsResponse> response = call.execute();
@@ -39,14 +39,10 @@ public class LoadRecentPostsTask extends Task<RecentPostsResponse> {
                 return posts;
             } else {
                 //status not ok.
-                OMError error = new OMError(posts.status);
-                onError(error);
+                throw OMError.createWithStatus(posts.status);
             }
-
         } else {
-            OMError error = new OMError(response.code(), response.message());
-            onError(error);
+            throw new OMError(response.code(), response.message());
         }
-        return null;
     }
 }

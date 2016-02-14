@@ -7,29 +7,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Post;
-import com.frankzheng.app.omelette.model.RecentPostsModel;
-import com.frankzheng.app.omelette.task.Task;
+import com.frankzheng.app.omelette.task.OMError;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecentPostsView {
     private static final String TAG = "MainActivity";
-
-    private int page = 1;
 
     PostsAdapter postsAdapter;
     ListView lv_posts;
+    View footer_load_more;
     SwipeRefreshLayout swipeRefreshLayout;
 
-    boolean paused = false;
+    RecentPostsPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +38,39 @@ public class MainActivity extends AppCompatActivity {
         postsAdapter = new PostsAdapter(this);
         lv_posts.setAdapter(postsAdapter);
 
+        footer_load_more = getLayoutInflater().inflate(R.layout.footer_load_more, null);
+        lv_posts.addFooterView(footer_load_more);
+
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
+
+        presenter = new RecentPostsPresenterImpl(this);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadPosts();
+                presenter.loadRecentPosts();
+            }
+        });
+
+        lv_posts.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private int preLastItem = 0;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //Log.d(TAG, "onScrollStateChanged " + scrollState);
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                //Log.d(TAG, String.format("first:%d, visible count:%d, total: %d", firstVisibleItem, visibleItemCount, totalItemCount));
+                final int lastItem = firstVisibleItem + visibleItemCount;
+                if (lastItem == totalItemCount) {
+                    if (preLastItem != lastItem) {
+                        preLastItem = lastItem;
+                        //load more
+                        presenter.loadMorePosts();
+                    }
+                }
             }
         });
 
@@ -57,87 +82,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RecentPostsModel.getInstance().setListener(new RecentPostsModel.Listener() {
-            @Override
-            public void postsChanged() {
-                showPosts();
-            }
-        });
-
-        if (RecentPostsModel.getInstance().isEmpty()) {
-            //load posts from cache.
-            RecentPostsModel.getInstance().loadRecentPostsFromLocalCache();
-        } else {
-            //has posts already, show them directly.
-            showPosts();
-        }
-
-        //load posts
-        swipeRefreshLayout.setRefreshing(true);
-        loadPosts();
-    }
-
-    private void loadPosts() {
-        Task task = RecentPostsModel.getInstance().loadRecentPosts();
-        if (task != null) {
-            task.addTaskListener(new Task.TaskListener() {
-                @Override
-                public void onComplete(Task task) {
-                    super.onComplete(task);
-                    if (!paused) {
-                        lv_posts.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-
-                    }
-                }
-            });
-        }
-    }
-
-    private void showPosts() {
-        if (paused) {
-            Log.d(TAG, "activity paused, won't show posts");
-            return;
-        }
-        final List<Post> posts = RecentPostsModel.getInstance().getPosts();
-        Log.i(TAG, "posts Changed, " + posts.size());
-        Collections.sort(posts, new Comparator<Post>() {
-            @Override
-            public int compare(Post lhs, Post rhs) {
-                return -lhs.date.compareTo(rhs.date);
-            }
-        });
-
-        lv_posts.post(new Runnable() {
-            @Override
-            public void run() {
-                //refresh data
-                postsAdapter.clear();
-                postsAdapter.addAll(posts);
-                postsAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        paused = false;
+        presenter.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        paused = true;
+        presenter.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        presenter.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onStart(this);
     }
 
     @Override
@@ -160,5 +128,29 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showProgress() {
+        Log.d(TAG, "showProgress");
+        swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void hideProgress() {
+        Log.d(TAG, "hideProgress");
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showError(OMError error) {
+        Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showPosts(List<Post> posts) {
+        postsAdapter.clear();
+        postsAdapter.addAll(posts);
+        postsAdapter.notifyDataSetChanged();
     }
 }
