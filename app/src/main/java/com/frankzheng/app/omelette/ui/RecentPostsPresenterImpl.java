@@ -1,5 +1,6 @@
 package com.frankzheng.app.omelette.ui;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.frankzheng.app.omelette.bean.Post;
@@ -89,6 +90,11 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     public void onStart(RecentPostsView view) {
         view.showProgress();
         loadRecentPosts();
+    }
+
+    @Override
+    public void showPostDetail(Context context, Post post) {
+        PostDetailActivity.start(context, post);
     }
 
     private void onPostsChanged() {

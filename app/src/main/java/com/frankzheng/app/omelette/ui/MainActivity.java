@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements RecentPostsView {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Post post = postsAdapter.getItem(position);
-                PostDetailActivity.start(MainActivity.this, post);
+                presenter.showPostDetail(MainActivity.this, post);
             }
         });
 
