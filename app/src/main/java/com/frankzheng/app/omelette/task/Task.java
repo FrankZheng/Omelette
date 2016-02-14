@@ -3,6 +3,7 @@ package com.frankzheng.app.omelette.task;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhengxiaoqiang on 16/2/4.
@@ -24,7 +25,7 @@ public abstract class Task<T> implements Runnable {
         }
     }
 
-    protected HashMap<TaskListener<T>, Boolean> listeners = new HashMap<>();
+    protected Map<TaskListener<T>, Boolean> listeners = new HashMap<>();
 
     public void addTaskListener(TaskListener<T> listener) {
         listeners.put(listener, true);

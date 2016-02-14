@@ -10,10 +10,6 @@ public class TaskManager {
         return sInstance;
     }
 
-    public void init() {
-
-    }
-
     public void execute(Runnable runnable) {
         Thread thread = new Thread(runnable);
         thread.start();

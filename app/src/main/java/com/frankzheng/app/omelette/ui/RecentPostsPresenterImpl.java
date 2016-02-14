@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
+import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.OMError;
 import com.frankzheng.app.omelette.task.Task;
 import com.frankzheng.app.omelette.util.ThreadUtil;
@@ -19,17 +20,20 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     private static final String TAG = RecentPostsPresenterImpl.class.getSimpleName();
     RecentPostsView view;
     RecentPostsModel model = RecentPostsModel.getInstance();
-    RecentPostsModelListener recentPostsModelListener = new RecentPostsModelListener();
+
     int currentPage = 1;
 
-    private class RecentPostsModelListener implements RecentPostsModel.Listener {
+    RecentPostsModel.Listener recentPostsModelListener = new RecentPostsModel.Listener() {
         @Override
         public void postsChanged() {
             if (view != null) {
                 onPostsChanged();
             }
         }
-    }
+    };
+
+    RecentPostsTaskListener recentPostsTaskListener = new RecentPostsTaskListener();
+    LoadMorePostsTaskListener loadMorePostsTaskListener = new LoadMorePostsTaskListener();
 
     public RecentPostsPresenterImpl(RecentPostsView view) {
         this.view = view;
@@ -50,7 +54,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     public void loadRecentPosts() {
         Task task = model.loadRecentPosts(1);
         if (task != null) {
-            task.addTaskListener(new RecentPostsTaskListener());
+            task.addTaskListener(recentPostsTaskListener);
         }
     }
 
@@ -62,7 +66,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         }
         Task task = model.loadRecentPosts(currentPage);
         if (task != null) {
-            task.addTaskListener(new LoadMorePostsTaskListener());
+            task.addTaskListener(loadMorePostsTaskListener);
         }
     }
 
@@ -107,7 +111,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         });
     }
 
-    private class RecentPostsTaskListener extends Task.TaskListener {
+    private class RecentPostsTaskListener extends Task.TaskListener<RecentPostsResponse> {
 
         @Override
         public void onError(OMError error) {
@@ -138,7 +142,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     private class LoadMorePostsTaskListener extends RecentPostsTaskListener {
 
         @Override
-        public void onSuccess(Task task, Object data) {
+        public void onSuccess(Task task, RecentPostsResponse data) {
             super.onSuccess(task, data);
             synchronized (this) {
                 currentPage++;
