@@ -1,116 +1,20 @@
 package com.frankzheng.app.omelette.ui;
 
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.frankzheng.app.omelette.R;
-import com.frankzheng.app.omelette.bean.Post;
-import com.frankzheng.app.omelette.task.OMError;
-
-import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements RecentPostsView {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-
-    @Bind(R.id.lv_posts)
-    ListView lv_posts;
-
-    @Bind(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    View footer_load_more;
-    PostsAdapter postsAdapter;
-    RecentPostsPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        ButterKnife.bind(this);
-
-        postsAdapter = new PostsAdapter(this);
-        lv_posts.setAdapter(postsAdapter);
-
-        footer_load_more = getLayoutInflater().inflate(R.layout.footer_load_more, null);
-        lv_posts.addFooterView(footer_load_more);
-
-        presenter = new RecentPostsPresenterImpl(this);
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                presenter.loadRecentPosts();
-            }
-        });
-
-        lv_posts.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int preLastItem = 0;
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //Log.d(TAG, "onScrollStateChanged " + scrollState);
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                //Log.d(TAG, String.format("first:%d, visible count:%d, total: %d", firstVisibleItem, visibleItemCount, totalItemCount));
-                final int lastItem = firstVisibleItem + visibleItemCount;
-                if (lastItem == totalItemCount) {
-                    if (preLastItem != lastItem) {
-                        preLastItem = lastItem;
-                        //load more
-                        presenter.loadMorePosts();
-                    }
-                }
-            }
-        });
-
-        lv_posts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Post post = postsAdapter.getItem(position);
-                presenter.showPostDetail(MainActivity.this, post);
-            }
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        presenter.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        presenter.onStart(this);
     }
 
     @Override
@@ -133,29 +37,5 @@ public class MainActivity extends AppCompatActivity implements RecentPostsView {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void showProgress() {
-        Log.d(TAG, "showProgress");
-        swipeRefreshLayout.setRefreshing(true);
-    }
-
-    @Override
-    public void hideProgress() {
-        Log.d(TAG, "hideProgress");
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void showError(OMError error) {
-        Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showPosts(List<Post> posts) {
-        postsAdapter.clear();
-        postsAdapter.addAll(posts);
-        postsAdapter.notifyDataSetChanged();
     }
 }
