@@ -2,8 +2,8 @@ package com.frankzheng.app.omelette.task;
 
 import android.util.Log;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zhengxiaoqiang on 16/2/4.
@@ -25,10 +25,10 @@ public abstract class Task<T> implements Runnable {
         }
     }
 
-    protected Map<TaskListener<T>, Boolean> listeners = new HashMap<>();
+    protected List<TaskListener<T>> listeners = new ArrayList<>();
 
     public void addTaskListener(TaskListener<T> listener) {
-        listeners.put(listener, true);
+        listeners.add(listener);
     }
 
     public void removeTaskListener(TaskListener<T> listener) {
@@ -56,19 +56,19 @@ public abstract class Task<T> implements Runnable {
     abstract protected T doInBackground() throws Throwable;
 
     protected void onSuccess(T data) {
-        for (TaskListener<T> listener : listeners.keySet()) {
+        for (TaskListener<T> listener : listeners) {
             listener.onSuccess(this, data);
         }
     }
 
     private void onError(OMError error) {
-        for (TaskListener listener : listeners.keySet()) {
+        for (TaskListener listener : listeners) {
             listener.onError(error);
         }
     }
 
     protected void onComplete() {
-        for (TaskListener listener : listeners.keySet()) {
+        for (TaskListener listener : listeners) {
             listener.onComplete(this);
         }
     }
