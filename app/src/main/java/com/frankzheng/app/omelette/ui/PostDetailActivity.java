@@ -9,12 +9,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
-import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.GetPostResponse;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,9 +27,11 @@ import retrofit2.Response;
 public class PostDetailActivity extends AppCompatActivity {
     private static final String TAG = "PostDetailActivity";
     private static final String POST_ID_KEY = "PostId";
-    private Post post;
 
-    private WebView wv_post;
+    @Bind(R.id.wv_post)
+    WebView wv_post;
+
+    private Post post;
 
     public static void start(Context context, Post post) {
         Intent intent = new Intent(context, PostDetailActivity.class);
@@ -38,9 +42,9 @@ public class PostDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_post_detail);
-        wv_post = (WebView)findViewById(R.id.wv_post);
+
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent != null) {

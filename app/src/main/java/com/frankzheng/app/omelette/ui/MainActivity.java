@@ -18,15 +18,21 @@ import com.frankzheng.app.omelette.task.OMError;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity implements RecentPostsView {
     private static final String TAG = "MainActivity";
 
-    PostsAdapter postsAdapter;
+    @Bind(R.id.lv_posts)
     ListView lv_posts;
-    View footer_load_more;
+
+    @Bind(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    View footer_load_more;
+    PostsAdapter postsAdapter;
     RecentPostsPresenter presenter;
 
     @Override
@@ -34,14 +40,13 @@ public class MainActivity extends AppCompatActivity implements RecentPostsView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        lv_posts = (ListView)findViewById(R.id.lv_posts);
+        ButterKnife.bind(this);
+
         postsAdapter = new PostsAdapter(this);
         lv_posts.setAdapter(postsAdapter);
 
         footer_load_more = getLayoutInflater().inflate(R.layout.footer_load_more, null);
         lv_posts.addFooterView(footer_load_more);
-
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
 
         presenter = new RecentPostsPresenterImpl(this);
 
