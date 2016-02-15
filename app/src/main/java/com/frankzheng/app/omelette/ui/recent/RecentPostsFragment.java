@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.ui;
+package com.frankzheng.app.omelette.ui.recent;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

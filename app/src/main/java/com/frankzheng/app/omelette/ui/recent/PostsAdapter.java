@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.ui;
+package com.frankzheng.app.omelette.ui.recent;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.frankzheng.app.omelette.BuildConfig;
-import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.bean.Post;
 
 /**
  * Created by zhengxiaoqiang on 16/2/5.

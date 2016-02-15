@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.ui;
+package com.frankzheng.app.omelette.ui.recent;
 
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.task.OMError;

@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.ui;
+package com.frankzheng.app.omelette.ui.recent;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,7 @@ import com.frankzheng.app.omelette.model.RecentPostsModel;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.OMError;
 import com.frankzheng.app.omelette.task.Task;
+import com.frankzheng.app.omelette.ui.PostDetailActivity;
 import com.frankzheng.app.omelette.util.ThreadUtil;
 
 import java.util.Collections;
@@ -74,11 +75,13 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     @Override
     public void onResume(RecentPostsView view) {
         this.view = view;
+        //TODO: need do things when resume
     }
 
     @Override
     public void onPause() {
-        view = null;
+        //view = null;
+        //TODO: need do things when paused
     }
 
     @Override
