@@ -14,19 +14,29 @@ import com.frankzheng.app.omelette.ui.videos.VideosFragment;
 /**
  * Created by zhengxiaoqiang on 16/2/15.
  */
-public class OMPagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends FragmentPagerAdapter {
+
     private static final String[] PAGE_TILES = {"新鲜事", "无聊图", "妹子图", "段子", "小电影"};
-    private static final Class[] FRAGMENT_CLASSES = {RecentPostsFragment.class, PicturesFragment.class, GirlsFragment.class, JokesFragment.class, VideosFragment.class};
+
+    private static final Class[] FRAGMENT_CLASSES = {
+            RecentPostsFragment.class,
+            PicturesFragment.class,
+            GirlsFragment.class,
+            JokesFragment.class,
+            VideosFragment.class
+    };
+
     Context context;
 
-    public OMPagerAdapter(Context context, FragmentManager fm) {
+    public PagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         this.context = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return Fragment.instantiate(context, FRAGMENT_CLASSES[position].getName());
+        Class clazz = FRAGMENT_CLASSES[position];
+        return Fragment.instantiate(context, clazz.getName());
     }
 
     @Override

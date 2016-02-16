@@ -1,20 +1,40 @@
 package com.frankzheng.app.omelette.ui;
 
 import android.os.Bundle;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankzheng.app.omelette.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
+    @Bind(R.id.pager)
+    ViewPager viewPager;
+
+    @Bind(R.id.pager_tab_strip)
+    PagerTabStrip pagerTabStrip;
+
+    PagerAdapter pagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
+
+        pagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+
     }
 
     @Override
