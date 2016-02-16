@@ -7,4 +7,5 @@
     <color name="blue">#FF375BF1</color>
     <color name="yellow">#FFF7D23E</color>
     <color name="green">#FF34A350</color>
+    <color name="tabsScrollColor">#8a140e</color>
 </resources>

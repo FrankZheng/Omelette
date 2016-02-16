@@ -1,13 +1,13 @@
 package com.frankzheng.app.omelette.ui;
 
 import android.os.Bundle;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.ui.widget.SlidingTabLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.pager)
     ViewPager viewPager;
 
-    @Bind(R.id.pager_tab_strip)
-    PagerTabStrip pagerTabStrip;
+    @Bind(R.id.tabs)
+    SlidingTabLayout tabs;
 
     PagerAdapter pagerAdapter;
 
@@ -34,6 +34,17 @@ public class MainActivity extends AppCompatActivity {
 
         pagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
+
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.tabsScrollColor);
+            }
+        });
+
+        tabs.setDistributeEvenly(true);
+        tabs.setViewPager(viewPager);
 
     }
 
