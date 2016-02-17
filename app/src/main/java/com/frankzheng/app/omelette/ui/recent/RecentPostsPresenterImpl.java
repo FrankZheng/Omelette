@@ -131,8 +131,14 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         public void onError(OMError error) {
             super.onError(error);
             if (view != null) {
-                String msg = String.format("Failed to load posts - %s", error.getMessage());
-                view.showError(new OMError(msg));
+                final String msg = String.format("Failed to load posts - %s", error.getMessage());
+                ThreadUtil.runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.showError(new OMError(msg));
+                    }
+                });
+
             }
         }
 
