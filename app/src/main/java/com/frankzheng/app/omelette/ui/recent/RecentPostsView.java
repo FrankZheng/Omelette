@@ -1,19 +1,13 @@
 package com.frankzheng.app.omelette.ui.recent;
 
 import com.frankzheng.app.omelette.bean.Post;
-import com.frankzheng.app.omelette.task.OMError;
+import com.frankzheng.app.omelette.ui.mvp.IView;
 
 import java.util.List;
 
 /**
  * Created by zhengxiaoqiang on 16/2/12.
  */
-public interface RecentPostsView {
-    void showProgress();
-
-    void hideProgress();
-
+public interface RecentPostsView extends IView {
     void showPosts(List<Post> posts);
-
-    void showError(OMError error);
 }

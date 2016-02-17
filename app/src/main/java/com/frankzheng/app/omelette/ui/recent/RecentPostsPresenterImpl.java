@@ -9,6 +9,7 @@ import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.OMError;
 import com.frankzheng.app.omelette.task.Task;
 import com.frankzheng.app.omelette.ui.PostDetailActivity;
+import com.frankzheng.app.omelette.ui.mvp.IView;
 import com.frankzheng.app.omelette.util.ThreadUtil;
 
 import java.util.Collections;
@@ -78,8 +79,8 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     }
 
     @Override
-    public void onResume(RecentPostsView view) {
-        this.view = view;
+    public void onResume(IView view) {
+        this.view = (RecentPostsView) view;
         //TODO: need do things when resume
     }
 
@@ -92,12 +93,6 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     @Override
     public void onDestroy() {
         view = null;
-    }
-
-    @Override
-    public void onStart(RecentPostsView view) {
-        //view.showProgress();
-        //loadRecentPosts();
     }
 
     @Override

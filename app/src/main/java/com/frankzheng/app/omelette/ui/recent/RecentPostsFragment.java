@@ -95,7 +95,6 @@ public class RecentPostsFragment extends Fragment implements RecentPostsView {
     @Override
     public void onStart() {
         super.onStart();
-        presenter.onStart(this);
     }
 
     @Override
