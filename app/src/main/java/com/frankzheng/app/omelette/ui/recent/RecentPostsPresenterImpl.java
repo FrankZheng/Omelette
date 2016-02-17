@@ -49,6 +49,8 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             //has posts already, show them directly.
             onPostsChanged();
         }
+
+        loadRecentPosts();
     }
 
 
@@ -56,7 +58,10 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     public void loadRecentPosts() {
         Task task = model.loadRecentPosts(1);
         if (task != null) {
+            view.showProgress();
             task.addTaskListener(recentPostsTaskListener);
+        } else {
+            view.hideProgress();
         }
     }
 
@@ -91,8 +96,8 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     @Override
     public void onStart(RecentPostsView view) {
-        view.showProgress();
-        loadRecentPosts();
+        //view.showProgress();
+        //loadRecentPosts();
     }
 
     @Override
