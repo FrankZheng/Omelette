@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -56,11 +55,9 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     @Override
     public void loadRecentPosts() {
-        Observable<RecentPostsResponse> observable = model.loadRecentPosts(1);
-        if (observable != null) {
-            observable.observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new RecentPostsObserver());
-        }
+        model.loadRecentPosts(1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new RecentPostsObserver());
     }
 
     @Override
@@ -69,12 +66,9 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             //first load more
             currentPage = 2;
         }
-
-        Observable<RecentPostsResponse> observable = model.loadRecentPosts(currentPage);
-        if (observable != null) {
-            observable.observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new LoadMorePostsObserver());
-        }
+        model.loadRecentPosts(currentPage)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new LoadMorePostsObserver());
     }
 
     @Override

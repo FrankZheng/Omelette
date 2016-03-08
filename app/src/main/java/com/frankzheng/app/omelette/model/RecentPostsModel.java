@@ -11,6 +11,7 @@ import com.frankzheng.app.omelette.MainApplication;
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
+import com.frankzheng.app.omelette.task.OMError;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -88,7 +89,7 @@ public class RecentPostsModel {
             tasksStatus.put(page, true);
             return observable;
         }
-        return null;
+        return Observable.error(new OMError("In the loading"));
     }
 
     public boolean isEmpty() {
