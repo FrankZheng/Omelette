@@ -18,6 +18,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by zhengxiaoqiang on 16/2/12.
@@ -29,19 +30,17 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     int currentPage = 1;
 
-    RecentPostsModel.Listener recentPostsModelListener = new RecentPostsModel.Listener() {
-        @Override
-        public void postsChanged() {
-            if (view != null) {
-                onPostsChanged();
-            }
-        }
-    };
-
-    public RecentPostsPresenterImpl(RecentPostsView view) {
+    public RecentPostsPresenterImpl(final RecentPostsView view) {
         this.view = view;
 
-        RecentPostsModel.getInstance().setListener(recentPostsModelListener);
+        RecentPostsModel.getInstance().postsChanged.subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                if (view != null) {
+                    onPostsChanged();
+                }
+            }
+        });
 
         if (RecentPostsModel.getInstance().isEmpty()) {
             //load posts from cache.

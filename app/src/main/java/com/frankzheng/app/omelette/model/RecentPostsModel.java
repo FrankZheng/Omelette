@@ -19,6 +19,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
@@ -31,15 +32,11 @@ public class RecentPostsModel {
     SharedPreferences sp;
     SharedPreferences.Editor editor;
 
-
-    public interface Listener {
-        void postsChanged();
-    }
+    public PublishSubject<Void> postsChanged = PublishSubject.create();
 
     private static RecentPostsModel instance;
     private final SparseArray<Post> posts = new SparseArray<>();
     private SparseBooleanArray tasksStatus = new SparseBooleanArray();
-    private Listener listener;
 
     public static RecentPostsModel getInstance() {
         if (instance == null) {
@@ -56,10 +53,6 @@ public class RecentPostsModel {
         //load posts from local cache
         sp = MainApplication.context.getSharedPreferences(POSTS_LOCAL_CACHE, Context.MODE_PRIVATE);
         editor = sp.edit();
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
     }
 
     private Observable<RecentPostsResponse> startLoadRecentPosts(final int page) {
@@ -139,23 +132,6 @@ public class RecentPostsModel {
         }
     }
 
-    public void updatePosts(List<Post> posts) {
-        synchronized (this.posts) {
-            boolean updated = false;
-            for (Post post : posts) {
-                if (this.posts.get(post.id) == null) {
-                    this.posts.put(post.id, post);
-                    updated = true;
-                }
-            }
-            if (updated) {
-                if (listener != null) {
-                    listener.postsChanged();
-                }
-            }
-        }
-    }
-
     public void updatePosts(RecentPostsResponse recentPosts) {
         synchronized (this.posts) {
             boolean updated = false;
@@ -167,9 +143,7 @@ public class RecentPostsModel {
                 }
             }
             if (updated) {
-                if (listener != null) {
-                    listener.postsChanged();
-                }
+                postsChanged.onNext(null);
             }
         }
     }
