@@ -9,16 +9,16 @@ import android.util.SparseBooleanArray;
 
 import com.frankzheng.app.omelette.MainApplication;
 import com.frankzheng.app.omelette.bean.Post;
+import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
-import com.frankzheng.app.omelette.task.LoadRecentPostsTask;
-import com.frankzheng.app.omelette.task.OMError;
-import com.frankzheng.app.omelette.task.Task;
-import com.frankzheng.app.omelette.task.TaskManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
+import rx.Observer;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
@@ -62,34 +62,38 @@ public class RecentPostsModel {
         this.listener = listener;
     }
 
-    private Task startLoadRecentPostsTask(final int page) {
+    private Observable<RecentPostsResponse> startLoadRecentPosts(final int page) {
         if (!tasksStatus.get(page, false)) {
-            final LoadRecentPostsTask task = new LoadRecentPostsTask(page);
-            task.addTaskListener(new Task.TaskListener<RecentPostsResponse>() {
+            Observable<RecentPostsResponse> observable = Network.getInstance().getRecentPosts(page);
+            observable.subscribe(new Observer<RecentPostsResponse>() {
                 @Override
-                public void onSuccess(Task task, RecentPostsResponse data) {
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(TAG, "onError: " + e.getMessage());
+                    tasksStatus.delete(page);
+                }
+
+                @Override
+                public void onNext(RecentPostsResponse recentPostsResponse) {
                     Log.i(TAG, "onSuccess");
                     tasksStatus.delete(page);
 
                     if (page == 1) {
                         //cache the posts on first page
                         Gson gson = new Gson();
-                        editor.putString(POSTS_KEY, gson.toJson(data));
+                        editor.putString(POSTS_KEY, gson.toJson(recentPostsResponse));
                         editor.commit();
                     }
 
-                    updatePosts(data);
-                }
-
-                @Override
-                public void onError(OMError error) {
-                    Log.i(TAG, "onError: " + error.getMessage());
-                    tasksStatus.delete(page);
+                    updatePosts(recentPostsResponse);
                 }
             });
             tasksStatus.put(page, true);
-            TaskManager.getInstance().execute(task);
-            return task;
+            return observable;
         }
         return null;
     }
@@ -97,7 +101,6 @@ public class RecentPostsModel {
     public boolean isEmpty() {
         return this.posts.size() == 0;
     }
-
 
     public void loadRecentPostsFromLocalCache() {
         String json = sp.getString(POSTS_KEY, null);
@@ -116,14 +119,8 @@ public class RecentPostsModel {
 
     }
 
-    public Task loadRecentPosts() {
-        //load first page
-        return startLoadRecentPostsTask(1);
-    }
-
-    public Task loadRecentPosts(int page) {
-        //load with page number
-        return startLoadRecentPostsTask(page);
+    public Observable<RecentPostsResponse> loadRecentPosts(final int page) {
+        return startLoadRecentPosts(page);
     }
 
     public Post getPostById(int id) {
@@ -176,9 +173,5 @@ public class RecentPostsModel {
             }
         }
     }
-
-
-
-
 
 }

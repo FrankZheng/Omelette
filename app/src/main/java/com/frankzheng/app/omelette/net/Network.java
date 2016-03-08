@@ -1,7 +1,15 @@
 package com.frankzheng.app.omelette.net;
 
+import com.frankzheng.app.omelette.net.response.APIResponse;
+import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
+import com.frankzheng.app.omelette.task.OMError;
+
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
+import retrofit2.RxJavaCallAdapterFactory;
+import rx.Observable;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
@@ -18,7 +26,8 @@ public class Network {
 
     public void init() {
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://i.jandan.net")
+                .baseUrl(JandanService.HOST_URL)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build();
 
         jandanService = retrofit.create(JandanService.class);
@@ -28,7 +37,26 @@ public class Network {
         return jandanService;
     }
 
+    private <T extends APIResponse> Observable<T> checkStatus(T response) {
+        if ("ok".equals(response.status)) {
+            return Observable.just(response);
+        } else {
+            return Observable.error(OMError.createWithStatus(response.status));
+        }
+    }
+
+    private <T extends APIResponse> Observable<T> checkStatusAndSubscribeOnNewThread(Observable<T> observable) {
+        return observable.flatMap(new Func1<T, Observable<T>>() {
+            @Override
+            public Observable<T> call(T response) {
+                return checkStatus(response);
+            }
+        }).subscribeOn(Schedulers.newThread());
+    }
 
 
+    public Observable<RecentPostsResponse> getRecentPosts(final int page) {
+        return checkStatusAndSubscribeOnNewThread(jandanService.getRecentPosts2(page));
+    }
 
 }

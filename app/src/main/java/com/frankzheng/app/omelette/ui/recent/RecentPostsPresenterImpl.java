@@ -7,7 +7,6 @@ import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.OMError;
-import com.frankzheng.app.omelette.task.Task;
 import com.frankzheng.app.omelette.ui.PostDetailActivity;
 import com.frankzheng.app.omelette.ui.mvp.IView;
 import com.frankzheng.app.omelette.util.ThreadUtil;
@@ -15,6 +14,10 @@ import com.frankzheng.app.omelette.util.ThreadUtil;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by zhengxiaoqiang on 16/2/12.
@@ -35,9 +38,6 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         }
     };
 
-    RecentPostsTaskListener recentPostsTaskListener = new RecentPostsTaskListener();
-    LoadMorePostsTaskListener loadMorePostsTaskListener = new LoadMorePostsTaskListener();
-
     public RecentPostsPresenterImpl(RecentPostsView view) {
         this.view = view;
 
@@ -57,12 +57,10 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     @Override
     public void loadRecentPosts() {
-        Task task = model.loadRecentPosts(1);
-        if (task != null) {
-            view.showProgress();
-            task.addTaskListener(recentPostsTaskListener);
-        } else {
-            view.hideProgress();
+        Observable<RecentPostsResponse> observable = model.loadRecentPosts(1);
+        if (observable != null) {
+            observable.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new RecentPostsObserver());
         }
     }
 
@@ -72,9 +70,11 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             //first load more
             currentPage = 2;
         }
-        Task task = model.loadRecentPosts(currentPage);
-        if (task != null) {
-            task.addTaskListener(loadMorePostsTaskListener);
+
+        Observable<RecentPostsResponse> observable = model.loadRecentPosts(currentPage);
+        if (observable != null) {
+            observable.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new LoadMorePostsObserver());
         }
     }
 
@@ -120,48 +120,37 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         });
     }
 
-    private class RecentPostsTaskListener extends Task.TaskListener<RecentPostsResponse> {
+    private class RecentPostsObserver implements Observer<RecentPostsResponse> {
 
         @Override
-        public void onError(OMError error) {
-            super.onError(error);
-            if (view != null) {
-                final String msg = String.format("Failed to load posts - %s", error.getMessage());
-                ThreadUtil.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.showError(new OMError(msg));
-                    }
-                });
+        public void onCompleted() {
+        }
 
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, "onError " + e.getLocalizedMessage());
+            if (view != null) {
+                final String msg = String.format("Failed to load posts - %s", e.getMessage());
+                view.showError(new OMError(msg));
+                view.hideProgress();
             }
         }
 
         @Override
-        public void onComplete(Task task) {
-            super.onComplete(task);
-
+        public void onNext(RecentPostsResponse recentPostsResponse) {
             if (view != null) {
-                ThreadUtil.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (view != null) {
-                            view.hideProgress();
-                        }
-                    }
-                });
+                view.hideProgress();
             }
         }
     }
 
-    private class LoadMorePostsTaskListener extends RecentPostsTaskListener {
-
+    private class LoadMorePostsObserver extends RecentPostsObserver {
         @Override
-        public void onSuccess(Task task, RecentPostsResponse data) {
-            super.onSuccess(task, data);
+        public void onNext(RecentPostsResponse recentPostsResponse) {
             synchronized (this) {
                 currentPage++;
             }
         }
     }
+
 }

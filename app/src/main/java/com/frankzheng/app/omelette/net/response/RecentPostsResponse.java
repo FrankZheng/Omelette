@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by zhengxiaoqiang on 16/2/2.
  */
-public class RecentPostsResponse {
+public class RecentPostsResponse extends APIResponse {
 
     public static class InnerPost {
         public int id;
@@ -42,7 +42,6 @@ public class RecentPostsResponse {
         public ArrayList<String> thumb_c;
     }
 
-    public String status;
     public int count;
     public int count_total;
     public int pages;

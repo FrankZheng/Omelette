@@ -75,7 +75,7 @@ public class RecentPostsFragment extends Fragment implements RecentPostsView {
                     if (preLastItem != lastItem) {
                         preLastItem = lastItem;
                         //load more
-                        presenter.loadMorePosts();
+                        //presenter.loadMorePosts();
                     }
                 }
             }
