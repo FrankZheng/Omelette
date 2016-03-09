@@ -20,20 +20,17 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
-import rx.subjects.PublishSubject;
+import rx.functions.Func1;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
  */
-public class RecentPostsModel {
+public class RecentPostsModel extends BaseModel<Post> {
     private static final String TAG = "RecentPostsModel";
 
     private static final String POSTS_LOCAL_CACHE = "PostsLocalCache";
     private static final String POSTS_KEY = "Posts";
     SharedPreferences sp;
-    SharedPreferences.Editor editor;
-
-    public PublishSubject<Void> postsChanged = PublishSubject.create();
 
     private static RecentPostsModel instance;
     private final SparseArray<Post> posts = new SparseArray<>();
@@ -53,11 +50,31 @@ public class RecentPostsModel {
     private RecentPostsModel() {
         //load posts from local cache
         sp = MainApplication.context.getSharedPreferences(POSTS_LOCAL_CACHE, Context.MODE_PRIVATE);
-        editor = sp.edit();
     }
 
-    private Observable<RecentPostsResponse> startLoadRecentPosts(final int page) {
+    @Override
+    public boolean isEmpty() {
+        return this.posts.size() == 0;
+    }
+
+    public void loadRecentPostsFromLocalCache() {
+        String json = sp.getString(POSTS_KEY, null);
+        if (!TextUtils.isEmpty(json)) {
+            Gson gson = new Gson();
+            try {
+                RecentPostsResponse posts = gson.fromJson(json, RecentPostsResponse.class);
+                if (posts != null) {
+                    updatePosts(posts);
+                }
+            } catch(JsonSyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Observable<Void> loadRecentPosts(final int page) {
         if (!tasksStatus.get(page, false)) {
+            tasksStatus.put(page, true);
             Observable<RecentPostsResponse> observable = Network.getInstance().getRecentPosts(page);
             observable.subscribe(new Observer<RecentPostsResponse>() {
                 @Override
@@ -79,42 +96,22 @@ public class RecentPostsModel {
                     if (page == 1) {
                         //cache the posts on first page
                         Gson gson = new Gson();
-                        editor.putString(POSTS_KEY, gson.toJson(recentPostsResponse));
-                        editor.commit();
+                        sp.edit().putString(POSTS_KEY, gson.toJson(recentPostsResponse)).apply();
                     }
 
                     updatePosts(recentPostsResponse);
                 }
             });
-            tasksStatus.put(page, true);
-            return observable;
-        }
-        return Observable.error(new OMError("In the loading"));
-    }
 
-    public boolean isEmpty() {
-        return this.posts.size() == 0;
-    }
-
-    public void loadRecentPostsFromLocalCache() {
-        String json = sp.getString(POSTS_KEY, null);
-        if (!TextUtils.isEmpty(json)) {
-            Gson gson = new Gson();
-            //Type type = new TypeToken<ArrayList<Post>>(){}.getType();
-            try {
-                RecentPostsResponse posts = gson.fromJson(json, RecentPostsResponse.class);
-                if (posts != null) {
-                    updatePosts(posts);
+            return observable.map(new Func1<RecentPostsResponse, Void>() {
+                @Override
+                public Void call(RecentPostsResponse recentPostsResponse) {
+                    return null;
                 }
-            } catch(JsonSyntaxException e) {
-                e.printStackTrace();
-            }
+            });
         }
 
-    }
-
-    public Observable<RecentPostsResponse> loadRecentPosts(final int page) {
-        return startLoadRecentPosts(page);
+        return Observable.error(new OMError("In the loading"));
     }
 
     public Post getPostById(int id) {
@@ -144,9 +141,28 @@ public class RecentPostsModel {
                 }
             }
             if (updated) {
-                postsChanged.onNext(null);
+                dataChanged.onNext(null);
             }
         }
     }
 
+    @Override
+    public Post getItemById(String id) {
+        return getPostById(Integer.valueOf(id));
+    }
+
+    @Override
+    public List<Post> getItems() {
+        return getPosts();
+    }
+
+    @Override
+    public void loadItemsFromLocalCache() {
+        loadRecentPostsFromLocalCache();
+    }
+
+    @Override
+    public Observable<Void> loadItems(int page) {
+        return loadRecentPosts(page);
+    }
 }

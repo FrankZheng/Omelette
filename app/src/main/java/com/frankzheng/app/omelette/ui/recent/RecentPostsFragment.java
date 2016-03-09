@@ -69,13 +69,18 @@ public class RecentPostsFragment extends Fragment implements RecentPostsView {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                //Log.d(TAG, String.format("first:%d, visible count:%d, total: %d", firstVisibleItem, visibleItemCount, totalItemCount));
+                //Log.d(TAG, String.format("first:%d, visible count:%d, total: %d, footers: %d", firstVisibleItem, visibleItemCount, totalItemCount, lv_posts.getFooterViewsCount()));
+                if (totalItemCount - lv_posts.getFooterViewsCount() - lv_posts.getHeaderViewsCount() == 0) {
+                    //list is empty
+                    return;
+                }
                 final int lastItem = firstVisibleItem + visibleItemCount;
                 if (lastItem == totalItemCount) {
                     if (preLastItem != lastItem) {
                         preLastItem = lastItem;
                         //load more
-                        //presenter.loadMorePosts();
+                        Log.i(TAG, "scroll to bottom");
+                        presenter.loadMorePosts();
                     }
                 }
             }

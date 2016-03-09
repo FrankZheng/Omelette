@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.frankzheng.app.omelette.bean.Post;
+import com.frankzheng.app.omelette.model.BaseModel;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
-import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 import com.frankzheng.app.omelette.task.OMError;
 import com.frankzheng.app.omelette.ui.PostDetailActivity;
 import com.frankzheng.app.omelette.ui.mvp.IView;
@@ -24,15 +24,16 @@ import rx.functions.Action1;
  */
 public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     private static final String TAG = RecentPostsPresenterImpl.class.getSimpleName();
+
     RecentPostsView view;
-    RecentPostsModel model = RecentPostsModel.getInstance();
+    BaseModel<Post> model = RecentPostsModel.getInstance();
 
     int currentPage = 1;
 
     public RecentPostsPresenterImpl(final RecentPostsView view) {
         this.view = view;
 
-        RecentPostsModel.getInstance().postsChanged.subscribe(new Action1<Void>() {
+        RecentPostsModel.getInstance().dataChanged.subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
                 if (view != null) {
@@ -43,7 +44,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
         if (RecentPostsModel.getInstance().isEmpty()) {
             //load posts from cache.
-            model.loadRecentPostsFromLocalCache();
+            model.loadItemsFromLocalCache();
         } else {
             //has posts already, show them directly.
             onPostsChanged();
@@ -55,7 +56,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     @Override
     public void loadRecentPosts() {
-        model.loadRecentPosts(1)
+        model.loadItems(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new RecentPostsObserver());
     }
@@ -66,7 +67,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             //first load more
             currentPage = 2;
         }
-        model.loadRecentPosts(currentPage)
+        model.loadItems(currentPage)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LoadMorePostsObserver());
     }
@@ -94,7 +95,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     }
 
     private void onPostsChanged() {
-        final List<Post> posts = model.getPosts();
+        final List<Post> posts = model.getItems();
         Log.d(TAG, "posts Changed, " + posts.size());
         Collections.sort(posts, new Comparator<Post>() {
             @Override
@@ -113,7 +114,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         });
     }
 
-    private class RecentPostsObserver implements Observer<RecentPostsResponse> {
+    private class RecentPostsObserver implements Observer<Void> {
 
         @Override
         public void onCompleted() {
@@ -130,7 +131,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
         }
 
         @Override
-        public void onNext(RecentPostsResponse recentPostsResponse) {
+        public void onNext(Void avoid) {
             if (view != null) {
                 view.hideProgress();
             }
@@ -139,7 +140,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
 
     private class LoadMorePostsObserver extends RecentPostsObserver {
         @Override
-        public void onNext(RecentPostsResponse recentPostsResponse) {
+        public void onNext(Void aVoid) {
             synchronized (this) {
                 currentPage++;
             }
