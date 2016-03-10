@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Picture;
-import com.frankzheng.app.omelette.task.OMError;
+import com.frankzheng.app.omelette.error.OMError;
 
 import java.util.List;
 

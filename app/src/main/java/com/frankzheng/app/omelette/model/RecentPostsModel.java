@@ -9,9 +9,9 @@ import android.util.SparseBooleanArray;
 
 import com.frankzheng.app.omelette.MainApplication;
 import com.frankzheng.app.omelette.bean.Post;
+import com.frankzheng.app.omelette.error.OMError;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
-import com.frankzheng.app.omelette.task.OMError;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

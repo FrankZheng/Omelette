@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Post;
-import com.frankzheng.app.omelette.task.OMError;
+import com.frankzheng.app.omelette.error.OMError;
 
 import java.util.List;
 

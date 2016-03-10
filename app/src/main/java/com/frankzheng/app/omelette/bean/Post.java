@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by zhengxiaoqiang on 16/2/2.
@@ -33,7 +34,7 @@ public class Post {
                 ? post.custom_fields.thumb_c.get(0) : null;
 
         if (!TextUtils.isEmpty(post.date)) {
-            SimpleDateFormat fmt = new SimpleDateFormat(DATE_FMT_PATTERN);
+            SimpleDateFormat fmt = new SimpleDateFormat(DATE_FMT_PATTERN, Locale.US);
             try {
                 this.date = fmt.parse(post.date);
             } catch (ParseException e) {

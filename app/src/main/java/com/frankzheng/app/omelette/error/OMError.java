@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.task;
+package com.frankzheng.app.omelette.error;
 
 /**
  * Created by zhengxiaoqiang on 16/2/7.

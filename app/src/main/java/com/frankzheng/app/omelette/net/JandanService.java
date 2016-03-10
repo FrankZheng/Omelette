@@ -16,9 +16,6 @@ public interface JandanService {
 
     String HOST_URL = "http://i.jandan.net";
 
-    @GET("?oxwlxojflwblxbsapi=get_recent_posts&include=url,date,tags,author,title,comment_count,custom_fields&custom_fields=thumb_c,views&dev=1")
-    Call<RecentPostsResponse> getRecentPosts(@Query("page") int page);
-
     @GET("?oxwlxojflwblxbsapi=get_post&include=content")
     Call<GetPostResponse> getPost(@Query("id") int id);
 
@@ -36,7 +33,7 @@ public interface JandanService {
 
 
     @GET("?oxwlxojflwblxbsapi=get_recent_posts&include=url,date,tags,author,title,comment_count,custom_fields&custom_fields=thumb_c,views&dev=1")
-    Observable<RecentPostsResponse> getRecentPosts2(@Query("page") int page);
+    Observable<RecentPostsResponse> getRecentPosts(@Query("page") int page);
 
 
 
