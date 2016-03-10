@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Post;
@@ -17,9 +18,8 @@ import com.frankzheng.app.omelette.net.response.GetPostResponse;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by zhengxiaoqiang on 16/2/5.
@@ -67,23 +67,25 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void loadPostContent() {
-        Call<GetPostResponse> response = Network.getInstance().getJandanService().getPost(post.id);
-        response.enqueue(new Callback<GetPostResponse>() {
-            @Override
-            public void onResponse(Response<GetPostResponse> response) {
-                if (response.isSuccess()) {
-                    post.content = response.body().post.content;
-                    renderPostDetail();
-                } else {
-                    Log.e(TAG, String.format("Failed to load post detail, %d", response.code()));
-                }
-            }
+        Network.getInstance().getPost(post.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<GetPostResponse>() {
+                    @Override
+                    public void onCompleted() {
+                    }
 
-            @Override
-            public void onFailure(Throwable t) {
-                Log.e(TAG, String.format("onFailure, %s", t.getLocalizedMessage()));
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to load post, " + e.getLocalizedMessage());
+                        Toast.makeText(PostDetailActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(GetPostResponse response) {
+                        post.content = response.post.content;
+                        renderPostDetail();
+                    }
+                });
     }
 
     private void renderPostDetail() {

@@ -16,8 +16,11 @@ public interface JandanService {
 
     String HOST_URL = "http://i.jandan.net";
 
+    @GET("?oxwlxojflwblxbsapi=get_recent_posts&include=url,date,tags,author,title,comment_count,custom_fields&custom_fields=thumb_c,views&dev=1")
+    Observable<RecentPostsResponse> getRecentPosts(@Query("page") int page);
+
     @GET("?oxwlxojflwblxbsapi=get_post&include=content")
-    Call<GetPostResponse> getPost(@Query("id") int id);
+    Observable<GetPostResponse> getPost(@Query("id") int id);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_pic_comments")
     Call<GetCommentsResponse> getPictures(@Query("page") int page);
@@ -30,13 +33,6 @@ public interface JandanService {
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_video_comments")
     Call<GetCommentsResponse> getVideos(@Query("page") int page);
-
-
-    @GET("?oxwlxojflwblxbsapi=get_recent_posts&include=url,date,tags,author,title,comment_count,custom_fields&custom_fields=thumb_c,views&dev=1")
-    Observable<RecentPostsResponse> getRecentPosts(@Query("page") int page);
-
-
-
 
 
 }

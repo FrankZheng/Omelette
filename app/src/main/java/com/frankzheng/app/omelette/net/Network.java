@@ -2,6 +2,7 @@ package com.frankzheng.app.omelette.net;
 
 import com.frankzheng.app.omelette.error.OMError;
 import com.frankzheng.app.omelette.net.response.APIResponse;
+import com.frankzheng.app.omelette.net.response.GetPostResponse;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 
 import retrofit2.GsonConverterFactory;
@@ -57,6 +58,10 @@ public class Network {
 
     public Observable<RecentPostsResponse> getRecentPosts(final int page) {
         return checkStatusAndSubscribeOnNewThread(jandanService.getRecentPosts(page));
+    }
+
+    public Observable<GetPostResponse> getPost(final int id) {
+        return checkStatusAndSubscribeOnNewThread(jandanService.getPost(id));
     }
 
 }
