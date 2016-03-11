@@ -8,19 +8,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.error.OMError;
+import com.frankzheng.app.omelette.ui.view.ObservableListView;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 
 /**
  * Created by zhengxiaoqiang on 16/2/15.
@@ -29,7 +29,7 @@ public class RecentPostsFragment extends Fragment implements RecentPostsView {
     private static final String TAG = "RecentPostsFragment";
 
     @Bind(R.id.lv_posts)
-    ListView lv_posts;
+    ObservableListView lv_posts;
 
     @Bind(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -59,30 +59,11 @@ public class RecentPostsFragment extends Fragment implements RecentPostsView {
             }
         });
 
-        lv_posts.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int preLastItem = 0;
-
+        lv_posts.scrolledToBottom().subscribe(new Action1<Boolean>() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //Log.d(TAG, "onScrollStateChanged " + scrollState);
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                //Log.d(TAG, String.format("first:%d, visible count:%d, total: %d, footers: %d", firstVisibleItem, visibleItemCount, totalItemCount, lv_posts.getFooterViewsCount()));
-                if (totalItemCount - lv_posts.getFooterViewsCount() - lv_posts.getHeaderViewsCount() == 0) {
-                    //list is empty
-                    return;
-                }
-                final int lastItem = firstVisibleItem + visibleItemCount;
-                if (lastItem == totalItemCount) {
-                    if (preLastItem != lastItem) {
-                        preLastItem = lastItem;
-                        //load more
-                        Log.i(TAG, "scroll to bottom");
-                        presenter.loadMorePosts();
-                    }
-                }
+            public void call(Boolean aBoolean) {
+                Log.d(TAG, "scrolled to bottom, load more posts");
+                presenter.loadMorePosts();
             }
         });
 
