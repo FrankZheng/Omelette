@@ -8,7 +8,6 @@ import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.error.OMError;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
-import com.frankzheng.app.omelette.store.KVStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +21,6 @@ import rx.functions.Func1;
  */
 public class RecentPostsModel extends BaseModel<Post> {
     private static final String TAG = "RecentPostsModel";
-
-    KVStore store;
 
     private static RecentPostsModel instance;
     private final SparseArray<Post> posts = new SparseArray<>();
@@ -41,16 +38,12 @@ public class RecentPostsModel extends BaseModel<Post> {
     }
 
     private RecentPostsModel() {
-        //load posts from local cache
-        store = new KVStore(getStoreName());
+        super();
     }
 
+    @Override
     protected String getStoreName() {
         return "RecentPosts";
-    }
-
-    protected String getStoreKey() {
-        return "items";
     }
 
     @Override

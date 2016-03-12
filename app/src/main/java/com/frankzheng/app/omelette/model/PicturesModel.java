@@ -12,6 +12,11 @@ import rx.Observable;
 public class PicturesModel extends BaseModel<Picture> {
 
     @Override
+    protected String getStoreName() {
+        return "Pictures";
+    }
+
+    @Override
     public Picture getItemById(String id) {
         return null;
     }
