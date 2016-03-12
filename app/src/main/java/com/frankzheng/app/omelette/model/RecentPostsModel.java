@@ -1,19 +1,14 @@
 package com.frankzheng.app.omelette.model;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
-import com.frankzheng.app.omelette.MainApplication;
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.error.OMError;
 import com.frankzheng.app.omelette.net.Network;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.frankzheng.app.omelette.store.KVStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +23,7 @@ import rx.functions.Func1;
 public class RecentPostsModel extends BaseModel<Post> {
     private static final String TAG = "RecentPostsModel";
 
-    private static final String POSTS_LOCAL_CACHE = "PostsLocalCache";
-    private static final String POSTS_KEY = "Posts";
-    SharedPreferences sp;
+    KVStore store;
 
     private static RecentPostsModel instance;
     private final SparseArray<Post> posts = new SparseArray<>();
@@ -49,7 +42,15 @@ public class RecentPostsModel extends BaseModel<Post> {
 
     private RecentPostsModel() {
         //load posts from local cache
-        sp = MainApplication.context.getSharedPreferences(POSTS_LOCAL_CACHE, Context.MODE_PRIVATE);
+        store = new KVStore(getStoreName());
+    }
+
+    protected String getStoreName() {
+        return "RecentPosts";
+    }
+
+    protected String getStoreKey() {
+        return "items";
     }
 
     @Override
@@ -58,17 +59,9 @@ public class RecentPostsModel extends BaseModel<Post> {
     }
 
     public void loadRecentPostsFromLocalCache() {
-        String json = sp.getString(POSTS_KEY, null);
-        if (!TextUtils.isEmpty(json)) {
-            Gson gson = new Gson();
-            try {
-                RecentPostsResponse posts = gson.fromJson(json, RecentPostsResponse.class);
-                if (posts != null) {
-                    updatePosts(posts);
-                }
-            } catch(JsonSyntaxException e) {
-                e.printStackTrace();
-            }
+        RecentPostsResponse posts = store.get(getStoreKey(), RecentPostsResponse.class);
+        if (posts != null) {
+            updatePosts(posts);
         }
     }
 
@@ -94,9 +87,7 @@ public class RecentPostsModel extends BaseModel<Post> {
                     tasksStatus.delete(page);
 
                     if (page == 1) {
-                        //cache the posts on first page
-                        Gson gson = new Gson();
-                        sp.edit().putString(POSTS_KEY, gson.toJson(recentPostsResponse)).apply();
+                        store.put(getStoreKey(), recentPostsResponse, false);
                     }
 
                     updatePosts(recentPostsResponse);
@@ -130,7 +121,7 @@ public class RecentPostsModel extends BaseModel<Post> {
         }
     }
 
-    public void updatePosts(RecentPostsResponse recentPosts) {
+    private void updatePosts(RecentPostsResponse recentPosts) {
         synchronized (this.posts) {
             boolean updated = false;
             for (RecentPostsResponse.InnerPost pt : recentPosts.posts) {
