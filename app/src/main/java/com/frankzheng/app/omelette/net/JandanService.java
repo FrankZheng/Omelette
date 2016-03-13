@@ -20,7 +20,7 @@ public interface JandanService {
     Observable<RecentPostsResponse> getRecentPosts(@Query("page") int page);
 
     @GET("?oxwlxojflwblxbsapi=get_post&include=content")
-    Observable<GetPostResponse> getPost(@Query("id") int id);
+    Observable<GetPostResponse> getPost(@Query("id") String id);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_pic_comments")
     Call<GetCommentsResponse> getPictures(@Query("page") int page);

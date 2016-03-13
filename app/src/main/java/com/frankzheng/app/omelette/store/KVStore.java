@@ -8,6 +8,8 @@ import com.frankzheng.app.omelette.MainApplication;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.lang.reflect.Type;
+
 /**
  * Created by zhengxiaoqiang on 16/3/11.
  */
@@ -36,7 +38,8 @@ public class KVStore {
         put(key, json, commit);
     }
 
-    public <T> T get(String key, Class clazz) {
+    @SuppressWarnings("unchecked")
+    public <T> T get(String key, Type clazz) {
         try {
             String json = get(key, "");
             if (!TextUtils.isEmpty(json)) {

@@ -5,9 +5,7 @@ import android.util.Log;
 
 import com.frankzheng.app.omelette.bean.Post;
 import com.frankzheng.app.omelette.error.OMError;
-import com.frankzheng.app.omelette.model.BaseModel;
 import com.frankzheng.app.omelette.model.RecentPostsModel;
-import com.frankzheng.app.omelette.ui.PostDetailActivity;
 import com.frankzheng.app.omelette.ui.mvp.IView;
 import com.frankzheng.app.omelette.util.ThreadUtil;
 
@@ -26,7 +24,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
     private static final String TAG = RecentPostsPresenterImpl.class.getSimpleName();
 
     RecentPostsView view;
-    BaseModel<Post> model = RecentPostsModel.getInstance();
+    RecentPostsModel model = RecentPostsModel.getInstance();
 
     int currentPage = 1;
 

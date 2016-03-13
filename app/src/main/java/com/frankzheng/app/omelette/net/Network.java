@@ -60,7 +60,7 @@ public class Network {
         return checkStatusAndSubscribeOnNewThread(jandanService.getRecentPosts(page));
     }
 
-    public Observable<GetPostResponse> getPost(final int id) {
+    public Observable<GetPostResponse> getPost(final String id) {
         return checkStatusAndSubscribeOnNewThread(jandanService.getPost(id));
     }
 

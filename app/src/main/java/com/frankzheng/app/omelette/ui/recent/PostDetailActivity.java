@@ -1,4 +1,4 @@
-package com.frankzheng.app.omelette.ui;
+package com.frankzheng.app.omelette.ui.recent;
 
 import android.content.Context;
 import android.content.Intent;
@@ -48,8 +48,11 @@ public class PostDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-            int id = intent.getIntExtra(POST_ID_KEY, -1);
-            post = RecentPostsModel.getInstance().getPostById(id);
+            String id = intent.getStringExtra(POST_ID_KEY);
+            post = RecentPostsModel.getInstance().getItemById(id);
+            if (post == null) {
+                throw new IllegalArgumentException("No such post");
+            }
             //TODO: show process indicator
             if (TextUtils.isEmpty(post.content)) {
                 loadPostContent();

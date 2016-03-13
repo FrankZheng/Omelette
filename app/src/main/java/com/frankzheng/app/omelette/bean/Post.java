@@ -15,7 +15,7 @@ import java.util.Locale;
  * Created by zhengxiaoqiang on 16/2/2.
  */
 public class Post {
-    public int id;
+    public String id;
     public String title;
     public String author;
     public String tag;
@@ -26,7 +26,7 @@ public class Post {
     private static final String DATE_FMT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     public Post(RecentPostsResponse.InnerPost post) {
-        this.id = post.id;
+        this.id = String.valueOf(post.id);
         this.title = post.title;
         this.author = post.author.name;
         this.tag = (post.tags != null && post.tags.size() > 0) ? post.tags.get(0).title : null;
