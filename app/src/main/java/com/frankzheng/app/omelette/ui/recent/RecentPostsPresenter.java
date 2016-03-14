@@ -8,7 +8,7 @@ import com.frankzheng.app.omelette.ui.mvp.IPresenter;
 /**
  * Created by zhengxiaoqiang on 16/2/12.
  */
-public interface RecentPostsPresenter extends IPresenter {
+public interface RecentPostsPresenter extends IPresenter<Post> {
     void showPostDetail(Context context, Post post);
 
 }

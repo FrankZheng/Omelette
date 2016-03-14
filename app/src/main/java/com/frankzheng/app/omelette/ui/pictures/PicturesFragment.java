@@ -1,45 +1,46 @@
 package com.frankzheng.app.omelette.ui.pictures;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Picture;
-import com.frankzheng.app.omelette.error.OMError;
-
-import java.util.List;
+import com.frankzheng.app.omelette.ui.BaseFragment;
+import com.frankzheng.app.omelette.ui.mvp.IPresenter;
 
 /**
  * Created by zhengxiaoqiang on 16/2/15.
  */
-public class PicturesFragment extends Fragment implements PicturesView {
+public class PicturesFragment extends BaseFragment<Picture> implements PicturesView {
     private static final String TAG = PicturesFragment.class.getSimpleName();
 
+    PicturesPresenter picturesPresenter;
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pictures, container, false);
-        return view;
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        return rootView;
     }
 
     @Override
-    public void showItems(List<Picture> pictures) {
-
+    protected ArrayAdapter<Picture> createItemsAdapter(Context context) {
+        return new PicturesAdapter(context);
     }
 
     @Override
-    public void showProgress() {
-
+    protected IPresenter createPresenter() {
+        picturesPresenter = new PicturesPresenterImpl(this);
+        return picturesPresenter;
     }
 
     @Override
-    public void hideProgress() {
-
+    protected int getLayoutId() {
+        return R.layout.fragment_pictures;
     }
 
-    @Override
-    public void showError(OMError error) {
 
-    }
 }
