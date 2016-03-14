@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.frankzheng.app.omelette.ui.view.ObservableListView
-        android:id="@+id/lv_pictures"
+        android:id="@+id/lv_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

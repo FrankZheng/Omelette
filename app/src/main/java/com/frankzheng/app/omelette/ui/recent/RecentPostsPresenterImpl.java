@@ -48,19 +48,18 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             onPostsChanged();
         }
 
-        loadRecentPosts();
+        loadItems();
     }
 
-
     @Override
-    public void loadRecentPosts() {
+    public void loadItems() {
         model.loadItems(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new RecentPostsObserver());
     }
 
     @Override
-    public void loadMorePosts() {
+    public void loadMoreItems() {
         if (currentPage == 1) {
             //first load more
             currentPage = 2;
@@ -106,7 +105,7 @@ public class RecentPostsPresenterImpl implements RecentPostsPresenter {
             @Override
             public void run() {
                 if (view != null) {
-                    view.showPosts(posts);
+                    view.showItems(posts);
                 }
             }
         });

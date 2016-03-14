@@ -1,9 +1,9 @@
 package com.frankzheng.app.omelette.model;
 
 import com.frankzheng.app.omelette.bean.Picture;
+import com.frankzheng.app.omelette.net.Network;
+import com.frankzheng.app.omelette.net.response.Comment;
 import com.frankzheng.app.omelette.net.response.GetCommentsResponse;
-
-import java.util.List;
 
 import rx.Observable;
 
@@ -32,32 +32,25 @@ public class PicturesModel extends BaseModel<Picture, GetCommentsResponse> {
 
     @Override
     protected Observable<GetCommentsResponse> fetchData(int page) {
-        return null;
+        return Network.getInstance().getPictures(page);
     }
 
-    @Override
-    public Picture getItemById(String id) {
-        return null;
-    }
-
-    @Override
-    public List<Picture> getItems() {
-        return null;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public void loadItemsFromLocalCache() {
-
-    }
 
     @Override
     protected void updateItems(GetCommentsResponse response) {
-
+        synchronized (this.items) {
+            boolean updated = false;
+            for (Comment comment : response.comments) {
+                if (this.items.get(comment.comment_ID) == null) {
+                    Picture picture = new Picture(comment);
+                    this.items.put(comment.comment_ID, picture);
+                    updated = true;
+                }
+            }
+            if (updated) {
+                dataChanged.onNext(null);
+            }
+        }
     }
 
 

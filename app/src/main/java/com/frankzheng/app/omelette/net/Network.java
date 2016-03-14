@@ -2,6 +2,7 @@ package com.frankzheng.app.omelette.net;
 
 import com.frankzheng.app.omelette.error.OMError;
 import com.frankzheng.app.omelette.net.response.APIResponse;
+import com.frankzheng.app.omelette.net.response.GetCommentsResponse;
 import com.frankzheng.app.omelette.net.response.GetPostResponse;
 import com.frankzheng.app.omelette.net.response.RecentPostsResponse;
 
@@ -62,6 +63,10 @@ public class Network {
 
     public Observable<GetPostResponse> getPost(final String id) {
         return checkStatusAndSubscribeOnNewThread(jandanService.getPost(id));
+    }
+
+    public Observable<GetCommentsResponse> getPictures(final int page) {
+        return checkStatusAndSubscribeOnNewThread(jandanService.getPictures(page));
     }
 
 }

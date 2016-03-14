@@ -23,7 +23,7 @@ public interface JandanService {
     Observable<GetPostResponse> getPost(@Query("id") String id);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_pic_comments")
-    Call<GetCommentsResponse> getPictures(@Query("page") int page);
+    Observable<GetCommentsResponse> getPictures(@Query("page") int page);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_ooxx_comments")
     Call<GetCommentsResponse> getHotGirls(@Query("page") int page);

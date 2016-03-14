@@ -10,4 +10,8 @@ public interface IPresenter {
     void onPause();
 
     void onDestroy();
+
+    void loadItems();
+
+    void loadMoreItems();
 }
