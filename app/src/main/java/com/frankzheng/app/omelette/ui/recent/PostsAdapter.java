@@ -2,46 +2,36 @@ package com.frankzheng.app.omelette.ui.recent;
 
 import android.content.Context;
 import android.net.Uri;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.frankzheng.app.omelette.BuildConfig;
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.bean.Post;
+import com.frankzheng.app.omelette.ui.BaseAdapter;
+import com.frankzheng.app.omelette.ui.IViewHolder;
 
 /**
  * Created by zhengxiaoqiang on 16/2/5.
  */
-public class PostsAdapter extends ArrayAdapter<Post> {
-
+public class PostsAdapter extends BaseAdapter<Post> {
 
     public PostsAdapter(Context context) {
-        super(context, 0);
+        super(context);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_post, null);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder)convertView.getTag();
-        }
-
-        if(viewHolder != null) {
-            Post post = getItem(position);
-            viewHolder.setData(post);
-        }
-        return convertView;
+    protected IViewHolder<Post> createViewHolder(View view) {
+        return new ViewHolder(view);
     }
 
-    static class ViewHolder {
+    @Override
+    protected int getRowLayoutID() {
+        return R.layout.row_post;
+    }
+
+    static class ViewHolder implements IViewHolder<Post> {
         private TextView tv_title;
         private TextView tv_source;
         private SimpleDraweeView iv_thumb;
@@ -52,6 +42,7 @@ public class PostsAdapter extends ArrayAdapter<Post> {
             iv_thumb = (SimpleDraweeView)view.findViewById(R.id.iv_thumb);
         }
 
+        @Override
         public void setData(Post post) {
             tv_title.setText(post.title);
             if (BuildConfig.DEBUG) {
