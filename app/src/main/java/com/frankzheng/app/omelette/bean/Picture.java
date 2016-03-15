@@ -29,7 +29,7 @@ public class Picture {
         author = comment.comment_author;
         picURL = comment.pics != null && !comment.pics.isEmpty() ? comment.pics.get(0) : null;
         title = comment.text_content;
-        positiveVote = Integer.valueOf(comment.vote_postive);
+        positiveVote = Integer.valueOf(comment.vote_positive);
         negativeVote = Integer.valueOf(comment.vote_negative);
 
         //TODO: put datetime stuff into utility or abstract to base class
@@ -41,6 +41,7 @@ public class Picture {
                 //e.printStackTrace();
             }
         }
+
 
     }
 

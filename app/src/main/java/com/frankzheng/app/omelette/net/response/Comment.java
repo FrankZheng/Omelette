@@ -55,7 +55,7 @@ public class Comment {
     public String user_id;
     public String comment_subscribe;
     public String comment_reply_ID;
-    public String vote_postive;
+    public String vote_positive;
     public String vote_negative;
     public String vote_ip_pool;
     public String text_content;

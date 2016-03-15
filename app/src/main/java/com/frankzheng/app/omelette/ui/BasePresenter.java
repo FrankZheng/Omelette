@@ -15,6 +15,7 @@ import java.util.List;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zhengxiaoqiang on 16/3/14.
@@ -88,6 +89,7 @@ public abstract class BasePresenter<T> implements IPresenter<T> {
     @Override
     public void loadItems() {
         model.loadItems(1)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LoadItemsObserver());
     }
@@ -99,6 +101,7 @@ public abstract class BasePresenter<T> implements IPresenter<T> {
             currentPage = 2;
         }
         model.loadItems(currentPage)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LoadMoreItemsObserver());
     }

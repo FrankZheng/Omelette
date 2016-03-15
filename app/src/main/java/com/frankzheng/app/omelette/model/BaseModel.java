@@ -15,7 +15,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observer;
-import rx.functions.Func1;
+import rx.Subscriber;
 import rx.subjects.PublishSubject;
 
 /**
@@ -67,40 +67,43 @@ public abstract class BaseModel<T1, T2> {
     abstract protected void updateItems(T2 response);
 
     public Observable<Void> loadItems(final int page) {
+        Log.i(TAG, "loadItems for " + this.getClass().getSimpleName());
+
         if (!tasksStatus.get(page, false)) {
             tasksStatus.put(page, true);
-            Observable<T2> observable = fetchData(page);
-            observable.subscribe(new Observer<T2>() {
+            return Observable.create(new Observable.OnSubscribe<Void>() {
                 @Override
-                public void onCompleted() {
+                public void call(final Subscriber<? super Void> subscriber) {
+                    fetchData(page).subscribe(new Observer<T2>() {
+                        @Override
+                        public void onCompleted() {
+                            subscriber.onCompleted();
+                        }
 
-                }
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i(TAG, "onError: " + e.getMessage());
+                            tasksStatus.delete(page);
+                            subscriber.onError(e);
+                        }
 
-                @Override
-                public void onError(Throwable e) {
-                    Log.i(TAG, "onError: " + e.getMessage());
-                    tasksStatus.delete(page);
-                }
+                        @Override
+                        public void onNext(T2 response) {
+                            Log.i(TAG, "onSuccess");
+                            tasksStatus.delete(page);
 
-                @Override
-                public void onNext(T2 response) {
-                    Log.i(TAG, "onSuccess");
-                    tasksStatus.delete(page);
+                            if (page == 1) {
+                                store.put(getStoreKey(), response, false);
+                            }
 
-                    if (page == 1) {
-                        store.put(getStoreKey(), response, false);
-                    }
-
-                    updateItems(response);
+                            updateItems(response);
+                            subscriber.onNext(null);
+                        }
+                    });
                 }
             });
 
-            return observable.map(new Func1<T2, Void>() {
-                @Override
-                public Void call(T2 response) {
-                    return null;
-                }
-            });
+
         }
 
         return Observable.error(new OMError("In the loading"));

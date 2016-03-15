@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zhengxiaoqiang on 16/2/5.
@@ -71,6 +72,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private void loadPostContent() {
         Network.getInstance().getPost(post.id)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GetPostResponse>() {
                     @Override
