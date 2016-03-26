@@ -1,23 +1,46 @@
 package com.frankzheng.app.omelette.ui.girls;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.bean.Girl;
+import com.frankzheng.app.omelette.ui.BaseFragment;
+import com.frankzheng.app.omelette.ui.mvp.IPresenter;
 
 /**
  * Created by zhengxiaoqiang on 16/2/15.
  */
-public class GirlsFragment extends Fragment {
+public class GirlsFragment extends BaseFragment<Girl> implements GirlsView {
+
+    GirlsPresenter girlsPresenter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_girls, container, false);
-        return view;
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        return rootView;
+    }
+
+    @Override
+    protected ArrayAdapter<Girl> createItemsAdapter(Context context) {
+        return new GirlsAdapter(context);
+    }
+
+    @Override
+    protected IPresenter createPresenter() {
+        girlsPresenter = new GirlsPresenterImpl(this);
+        return girlsPresenter;
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_girls;
     }
 
 

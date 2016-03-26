@@ -26,7 +26,7 @@ public interface JandanService {
     Observable<GetCommentsResponse> getPictures(@Query("page") int page);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_ooxx_comments")
-    Call<GetCommentsResponse> getHotGirls(@Query("page") int page);
+    Observable<GetCommentsResponse> getGirls(@Query("page") int page);
 
     @GET("?oxwlxojflwblxbsapi=jandan.get_duan_comments")
     Call<GetCommentsResponse> getJokes(@Query("page") int page);

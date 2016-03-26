@@ -70,4 +70,11 @@ public class Network {
         return checkStatus(jandanService.getPictures(page));
     }
 
+    public Observable<GetCommentsResponse> getGirls(final int page) {
+        Log.i(TAG, "getGirls, " + page);
+        return checkStatus(jandanService.getGirls(page));
+    }
+
+
+
 }
