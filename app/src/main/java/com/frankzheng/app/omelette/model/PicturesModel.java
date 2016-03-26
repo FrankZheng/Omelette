@@ -13,7 +13,7 @@ import rx.Observable;
 public class PicturesModel extends BaseModel<Picture, GetCommentsResponse> {
     private static final String TAG = PicturesModel.class.getSimpleName();
 
-    private static PicturesModel instance = null;
+    private static volatile PicturesModel instance = null;
 
     public static PicturesModel getInstance() {
         if (instance == null) {

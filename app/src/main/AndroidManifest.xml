@@ -28,6 +28,10 @@
             android:name=".ui.recent.PostDetailActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ui.pictures.PictureDetailActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

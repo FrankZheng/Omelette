@@ -13,7 +13,7 @@ import rx.Observable;
 public class RecentPostsModel extends BaseModel<Post, RecentPostsResponse> {
     private static final String TAG = "RecentPostsModel";
 
-    private static RecentPostsModel instance;
+    private static volatile RecentPostsModel instance;
 
     public static RecentPostsModel getInstance() {
         if (instance == null) {
