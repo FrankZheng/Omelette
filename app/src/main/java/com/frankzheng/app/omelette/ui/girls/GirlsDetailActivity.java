@@ -5,6 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 /**
  * Created by zhengxiaoqiang on 16/3/28.
  */
-public class GirlDetailActivity extends AppCompatActivity {
+public class GirlsDetailActivity extends AppCompatActivity {
 
 }

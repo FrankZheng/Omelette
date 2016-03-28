@@ -20,6 +20,7 @@ public abstract class ItemDetailActivity<T extends Item> extends AppCompatActivi
     private static final String ITEM_ID_KEY = "ItemID";
 
     protected T item;
+    protected boolean initOk;
 
     protected static <T extends Item> void start(Context context, T item, Class<? extends ItemDetailActivity> clazz) {
         Intent intent = new Intent(context, clazz);
@@ -27,28 +28,37 @@ public abstract class ItemDetailActivity<T extends Item> extends AppCompatActivi
         context.startActivity(intent);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    protected boolean init() {
         if (getIntent() != null) {
             String itemId = getIntent().getStringExtra(ITEM_ID_KEY);
             item = getModel().getItemById(itemId);
             if (item == null) {
                 Toast.makeText(this, "Failed to get item from model", Toast.LENGTH_SHORT).show();
                 finish();
+                return false;
             }
+
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+
+            setContentView(getLayoutResID());
+
+            ButterKnife.bind(this);
+
+            return true;
         }
+        return false;
+    }
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initOk = init();
+    }
 
-        setContentView(getLayoutResID());
-
-        ButterKnife.bind(this);
-
-
+    protected boolean isInitOk() {
+        return initOk;
     }
 
     abstract protected BaseModel<T, ? extends APIResponse> getModel();

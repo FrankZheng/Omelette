@@ -34,13 +34,15 @@ public class PictureDetailActivity extends ItemDetailActivity<Picture> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                Uri uri = Uri.parse(item.picURL);
-                iv_pic.setImageURI(uri);
-            }
-        });
+        if (isInitOk()) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    Uri uri = Uri.parse(item.picURL);
+                    iv_pic.setImageURI(uri);
+                }
+            });
+        }
     }
 
     @Override
