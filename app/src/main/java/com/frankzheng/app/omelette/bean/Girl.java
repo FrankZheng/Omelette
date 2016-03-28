@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * Created by zhengxiaoqiang on 16/3/26.
  */
-public class Girl {
+public class Girl implements Item {
     public String id;
     public String author;
     public String picURL;
@@ -42,5 +42,10 @@ public class Girl {
             }
         }
 
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 }

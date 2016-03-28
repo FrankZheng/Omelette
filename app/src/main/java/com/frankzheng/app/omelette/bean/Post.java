@@ -14,7 +14,7 @@ import java.util.Locale;
 /**
  * Created by zhengxiaoqiang on 16/2/2.
  */
-public class Post {
+public class Post implements Item {
     public String id;
     public String title;
     public String author;
@@ -57,4 +57,8 @@ public class Post {
         return "";
     }
 
+    @Override
+    public String getId() {
+        return id;
+    }
 }

@@ -32,6 +32,10 @@
             android:name=".ui.pictures.PictureDetailActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ui.girls.GirlDetailActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
