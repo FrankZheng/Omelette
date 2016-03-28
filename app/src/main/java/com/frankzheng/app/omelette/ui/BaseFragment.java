@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -39,12 +40,12 @@ public abstract class BaseFragment<T> extends Fragment implements IView<T> {
     @Bind(R.id.swipe_refresh_layout)
     public SwipeRefreshLayout swipeRefreshLayout;
 
-    protected IPresenter presenter;
+    protected IPresenter<T> presenter;
 
 
     abstract protected ArrayAdapter<T> createItemsAdapter(Context context);
 
-    abstract protected IPresenter createPresenter();
+    abstract protected IPresenter<T> createPresenter();
 
     abstract protected int getLayoutId();
 
@@ -74,6 +75,14 @@ public abstract class BaseFragment<T> extends Fragment implements IView<T> {
             public void call(Boolean aBoolean) {
                 Log.d(TAG, "scrolled to bottom, load more posts");
                 presenter.loadMoreItems();
+            }
+        });
+
+        lv_items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                T item = itemsAdapter.getItem(position);
+                presenter.showItemDetail(getContext(), item);
             }
         });
 

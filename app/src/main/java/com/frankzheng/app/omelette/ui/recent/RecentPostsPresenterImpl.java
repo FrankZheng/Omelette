@@ -37,7 +37,7 @@ public class RecentPostsPresenterImpl extends BasePresenter<Post> implements Rec
     }
 
     @Override
-    public void showPostDetail(Context context, Post post) {
+    public void showItemDetail(Context context, Post post) {
         PostDetailActivity.start(context, post);
     }
 

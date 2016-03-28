@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.frankzheng.app.omelette.R;
@@ -25,14 +24,6 @@ public class GirlsFragment extends BaseFragment<Girl> implements GirlsView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-
-        lv_items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Girl girl = itemsAdapter.getItem(position);
-                girlsPresenter.showGirlDetail(getContext(), girl);
-            }
-        });
         return rootView;
     }
 

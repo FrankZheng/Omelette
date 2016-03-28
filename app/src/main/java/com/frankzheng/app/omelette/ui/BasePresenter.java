@@ -1,5 +1,6 @@
 package com.frankzheng.app.omelette.ui;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.frankzheng.app.omelette.error.OMError;
@@ -104,6 +105,11 @@ public abstract class BasePresenter<T> implements IPresenter<T> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LoadMoreItemsObserver());
+    }
+
+    @Override
+    public void showItemDetail(Context context, T item) {
+        //default do nothing
     }
 
     protected void onViewChanged(IView<T> view) {

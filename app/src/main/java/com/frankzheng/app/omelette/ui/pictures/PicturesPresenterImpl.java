@@ -34,7 +34,7 @@ public class PicturesPresenterImpl extends BasePresenter<Picture> implements Pic
     }
 
     @Override
-    public void showPictureDetail(Context context, Picture picture) {
+    public void showItemDetail(Context context, Picture picture) {
         PictureDetailActivity.start(context, picture);
     }
 }
