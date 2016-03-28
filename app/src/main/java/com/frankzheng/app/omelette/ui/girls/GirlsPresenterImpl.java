@@ -24,6 +24,6 @@ public class GirlsPresenterImpl extends BasePresenter<Girl> implements GirlsPres
 
     @Override
     public void showGirlDetail(Context context, Girl girl) {
-
+        GirlsDetailActivity.start(context, girl);
     }
 }
