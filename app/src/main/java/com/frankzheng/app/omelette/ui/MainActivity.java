@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankzheng.app.omelette.R;
+import com.frankzheng.app.omelette.log.ILogger;
+import com.frankzheng.app.omelette.log.LoggerFactory;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -16,6 +18,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    ILogger logger = LoggerFactory.getInstance().getLogger(TAG);
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logger.i("onCreate");
+
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
@@ -40,8 +45,14 @@ public class MainActivity extends AppCompatActivity {
 
         pagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
+        viewPager.setOffscreenPageLimit(2);
 
         tabs.setupWithViewPager(viewPager);
+
+//        List<LogRecord> logs = logger.getAllRecords();
+//        for (LogRecord record : logs) {
+//            Log.i(TAG, record.toString());
+//        }
     }
 
     @Override
