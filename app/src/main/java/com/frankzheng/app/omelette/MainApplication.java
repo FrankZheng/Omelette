@@ -13,14 +13,17 @@ import com.frankzheng.app.omelette.net.Network;
  */
 public class MainApplication extends Application {
 
+    private static final String TAG = MainApplication.class.getSimpleName();
+
     public static Context context;
 
-    private ILogger logger = LoggerFactory.getInstance().getLogger("MainApplication");
+    private ILogger logger;
 
     public void onCreate() {
         super.onCreate();
         context = this;
 
+        logger = LoggerFactory.getInstance().getLogger(TAG);
         logger.i("onCreate");
 
         //initialize network infrastructure

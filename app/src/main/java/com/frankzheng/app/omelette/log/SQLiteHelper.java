@@ -23,6 +23,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String LOG_TABLE_NAME = "LOG";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_DATE = "DATE";
+    private static final String COLUMN_LEVEL = "LEVEL";
     private static final String COLUMN_TAG = "TAG";
     private static final String COLUMN_LOG = "LOG";
 
@@ -34,12 +35,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.i(TAG, "onCreate");
-        String sql = String.format("create table %s ( %s, %s, %s, %s )",
+        String sql = String.format("create table %s ( %s, %s, %s, %s, %s )",
                 LOG_TABLE_NAME,
-                COLUMN_ID + "INTEGER PRIMARY KEY AUTOINCREMENT",
-                COLUMN_DATE + "BIGINT",
-                COLUMN_TAG + "VARCHAR(255)",
-                COLUMN_LOG + "VARCHAR");
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
+                COLUMN_DATE + " BIGINT",
+                COLUMN_LEVEL + " INTEGER",
+                COLUMN_TAG + " VARCHAR(255)",
+                COLUMN_LOG + " VARCHAR");
         Log.d(TAG, sql);
         db.execSQL(sql);
     }
@@ -56,6 +58,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         if (db != null) {
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_DATE, record.getDate().getTime());
+            cv.put(COLUMN_LEVEL, record.getLevel());
             cv.put(COLUMN_TAG, record.getTag());
             cv.put(COLUMN_LOG, record.getLog());
             long ret = db.insert(LOG_TABLE_NAME, null, cv);
@@ -79,10 +82,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             LogRecord record = new LogRecord();
-            Date date = new Date(cursor.getLong(0));
+            Date date = new Date(cursor.getLong(1));
             record.setDate(date);
-            record.setTag(cursor.getString(1));
-            record.setLog(cursor.getString(2));
+            record.setLevel(cursor.getInt(2));
+            record.setTag(cursor.getString(3));
+            record.setLog(cursor.getString(4));
             records.add(record);
         }
         cursor.close();

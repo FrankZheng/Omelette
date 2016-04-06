@@ -5,12 +5,16 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.log.ILogger;
+import com.frankzheng.app.omelette.log.LogRecord;
 import com.frankzheng.app.omelette.log.LoggerFactory;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -49,10 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
         tabs.setupWithViewPager(viewPager);
 
-//        List<LogRecord> logs = logger.getAllRecords();
-//        for (LogRecord record : logs) {
-//            Log.i(TAG, record.toString());
-//        }
+        if (logger.logsAreSaved()) {
+            List<LogRecord> logs = logger.getAllRecords();
+            for (LogRecord record : logs) {
+                Log.i(TAG, record.toString());
+            }
+        }
     }
 
     @Override

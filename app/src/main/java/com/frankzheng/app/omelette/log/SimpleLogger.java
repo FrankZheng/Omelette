@@ -9,7 +9,7 @@ import java.util.List;
  * Created by zhengxiaoqiang on 16/4/5.
  */
 public class SimpleLogger implements ILogger {
-    private String tag;
+    protected String tag;
 
     @Override
     public boolean logsAreSaved() {
@@ -67,6 +67,17 @@ public class SimpleLogger implements ILogger {
     public void v(String tag, String msg) {
         checkTag(tag);
         Log.v(tag, msg);
+    }
+
+    @Override
+    public void w(String tag, String msg) {
+        checkTag(tag);
+        Log.w(tag, msg);
+    }
+
+    @Override
+    public void w(String msg) {
+        w(tag, msg);
     }
 
     protected void checkTag(String tag) {
