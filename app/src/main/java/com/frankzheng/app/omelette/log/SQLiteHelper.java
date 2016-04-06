@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.frankzheng.app.omelette.MainApplication;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +30,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LOG = "LOG";
 
 
-    public SQLiteHelper(Context context) {
+    private static SQLiteHelper instance;
+
+    public static SQLiteHelper getInstance() {
+        if (instance == null) {
+            synchronized (SQLiteHelper.class) {
+                if (instance == null) {
+                    instance = new SQLiteHelper(MainApplication.context);
+                }
+            }
+        }
+        return instance;
+    }
+
+
+    protected SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        if (context == null) {
+            throw new IllegalArgumentException("context is null");
+        }
     }
 
     @Override

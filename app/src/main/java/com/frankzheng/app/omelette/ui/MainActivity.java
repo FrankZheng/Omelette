@@ -11,10 +11,8 @@ import android.view.MenuItem;
 
 import com.frankzheng.app.omelette.R;
 import com.frankzheng.app.omelette.log.ILogger;
-import com.frankzheng.app.omelette.log.LogRecord;
+import com.frankzheng.app.omelette.log.LogArchiver;
 import com.frankzheng.app.omelette.log.LoggerFactory;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,12 +51,19 @@ public class MainActivity extends AppCompatActivity {
 
         tabs.setupWithViewPager(viewPager);
 
-        if (logger.logsAreSaved()) {
-            List<LogRecord> logs = logger.getAllRecords();
-            for (LogRecord record : logs) {
-                Log.i(TAG, record.toString());
-            }
-        }
+//        if (logger.logsAreSaved()) {
+//            List<LogRecord> logs = logger.getAllRecords();
+//            for (LogRecord record : logs) {
+//                Log.i(TAG, record.toString());
+//            }
+//        }
+    }
+
+
+    private void uploadLog() {
+        LogArchiver.ArchiveResult result = LogArchiver.getInstance().archive();
+        Log.i(TAG, result == null ? "null" : result.toString());
+
     }
 
     @Override
@@ -78,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_upload_log) {
+            uploadLog();
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

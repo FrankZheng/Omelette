@@ -6,6 +6,8 @@ package com.frankzheng.app.omelette.log;
 public class LoggerFactory {
     private static volatile LoggerFactory instance = null;
 
+    private ILogger logger;
+
     public static LoggerFactory getInstance() {
         if (instance == null) {
             synchronized (LoggerFactory.class) {
@@ -17,8 +19,8 @@ public class LoggerFactory {
         return instance;
     }
 
+
     public ILogger getLogger(String tag) {
-        //return new SimpleLogger(tag);
         return new DBLogger(tag);
     }
 }

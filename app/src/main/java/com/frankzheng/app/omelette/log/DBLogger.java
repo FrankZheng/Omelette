@@ -2,8 +2,6 @@ package com.frankzheng.app.omelette.log;
 
 import android.util.Log;
 
-import com.frankzheng.app.omelette.MainApplication;
-
 import java.util.Date;
 import java.util.List;
 
@@ -12,11 +10,10 @@ import java.util.List;
  */
 public class DBLogger extends SimpleLogger {
 
-    SQLiteHelper dbHelper;
+    SQLiteHelper dbHelper = SQLiteHelper.getInstance();
 
     public DBLogger(String tag) {
         super(tag);
-        dbHelper = new SQLiteHelper(MainApplication.context);
     }
 
     @Override
